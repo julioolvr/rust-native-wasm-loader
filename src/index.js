@@ -1,4 +1,4 @@
-import {execAsync} from 'async-child-process';
+import { execAsync } from 'async-child-process';
 import fse from 'fs-extra';
 import loaderUtils from 'loader-utils';
 import os from 'os';
@@ -26,6 +26,38 @@ const DEFAULT_OPTIONS = {
   cargoWeb: false,
   name: undefined,
   regExp: undefined,
+  wasmBindgen: false,
+  wasm2es6js: false,
+};
+
+const loadWasmBindgen = async function(self, opts, srcDir) {
+  const release = opts.release;
+  const target = opts.target;
+
+  const cmd = `cargo web build --message-format=json --target=${target}${release ? ' --release' : ''}`;
+  const result = await execAsync(cmd, {cwd: srcDir});
+
+  const {wasmFile} = handleCargo(self, result);
+
+  if (!wasmFile) {
+    throw new Error('No wasm file produced as build output');
+  }
+  const basename = path.basename(wasmFile).slice(0, -'.wasm'.length);
+  const moduleDir = path.join(path.dirname(wasmFile), 'module');
+  await fse.mkdirs(moduleDir);
+
+  await execAsync(`wasm-bindgen ${wasmFile} --out-dir ${moduleDir}`);
+
+  if (opts.wasm2es6js) {
+    await execAsync(`wasm2es6js ${moduleDir}/${basename}_wasm.wasm -o ${moduleDir}/${basename}_wasm.js --base64`);
+    await fse.remove(`${moduleDir}/${basename}_wasm.wasm`);
+  }
+
+  const includeRequest = loaderUtils.stringifyRequest(self, path.join(moduleDir, basename));
+  console.log(includeRequest);
+  return `
+module.exports = require(${includeRequest});
+`
 };
 
 const loadCargoWeb = async function(self, opts, srcDir) {
@@ -129,8 +161,11 @@ const load = async function(self) {
 
   const opts = Object.assign({}, DEFAULT_OPTIONS, loaderUtils.getOptions(self));
   const cargoWeb = opts.cargoWeb;
+  const wasmBindgen = opts.wasmBindgen;
 
-  if (cargoWeb) {
+  if (wasmBindgen) {
+    return await loadWasmBindgen(self, opts, srcDir);
+  } else if (cargoWeb) {
     return await loadCargoWeb(self, opts, srcDir);
   } else {
     return await loadRaw(self, opts, srcDir);

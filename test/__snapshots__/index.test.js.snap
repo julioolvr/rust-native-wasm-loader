@@ -1,30 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`rust-native-wasm-loader loads a cargo-web project: errors 1`] = `Array []`;
+exports[`rust-native-wasm-loader loads a wasm-bindgen project: errors 1`] = `Array []`;
 
-exports[`rust-native-wasm-loader loads a cargo-web project: output 1`] = `"Hello, World!"`;
-
-exports[`rust-native-wasm-loader loads a cargo-web project: warnings 1`] = `Array []`;
-
-exports[`rust-native-wasm-loader loads a simple cargo project with warnings: errors 1`] = `Array []`;
-
-exports[`rust-native-wasm-loader loads a simple cargo project with warnings: output 1`] = `1`;
-
-exports[`rust-native-wasm-loader loads a simple cargo project with warnings: warnings 1`] = `
-Array [
-  "ModuleWarning: warning: unused variable: \`b\`
- --> src/lib.rs:2:20",
-]
-`;
-
-exports[`rust-native-wasm-loader loads a simple cargo project with wasm-gc: errors 1`] = `Array []`;
-
-exports[`rust-native-wasm-loader loads a simple cargo project with wasm-gc: output 1`] = `3`;
-
-exports[`rust-native-wasm-loader loads a simple cargo project with wasm-gc: warnings 1`] = `Array []`;
-
-exports[`rust-native-wasm-loader loads a simple cargo project: errors 1`] = `Array []`;
-
-exports[`rust-native-wasm-loader loads a simple cargo project: output 1`] = `3`;
-
-exports[`rust-native-wasm-loader loads a simple cargo project: warnings 1`] = `Array []`;
+exports[`rust-native-wasm-loader loads a wasm-bindgen project: warnings 1`] = `Array []`;
